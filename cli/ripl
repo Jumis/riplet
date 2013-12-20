@@ -28,13 +28,13 @@ fi;
 else
 
 if [ "$CMD" = "sh" ]; then
-echo "you ran sh";
+$DIR/sh "$@"
 
 elif [ "$CMD" = "docker" ]; then
-echo "you ran docker";
+$DIR/docker "$@"
 
 elif [ "$CMD" = "image" ]; then
-echo "you ran image";
+$DIR/image "$@"
 
 else
 echo "riplet: $NAME /";

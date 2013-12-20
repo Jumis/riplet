@@ -1,0 +1,18 @@
+#!/bin/bash
+BASEDIR=${2-"/root"};
+
+if [ -n "$1" ]; then
+ENTRY="service/$1/init";
+
+if [ -f "$BASEDIR/$ENTRY" ]; then
+docker run -v $BASEDIR:/riplet:ro -e RIPLET_HOME=/riplet -n=false -dns 0.0.0.0 \
+	-d foldersio-dev \
+	/riplet/$ENTRY
+else
+echo "riplet error: Service file not found: $BASEDIR/$ENTRY";
+fi;
+
+else
+echo "riplet usage: ripl docker <service> [basedir]";
+fi;
+
