@@ -11,13 +11,19 @@ NAME=$("$DIR/branch");
 ### Riplet (ripl)
 
 if [ "$NAME" = "master" ]; then
-echo "riplet: $NAME /";
 
-if [ "$CMD" = "all"]; then
+if [ "$CMD" = "ls" ]; then
+NAME=${2-"$NAME"};
+echo "riplet: $NAME /";
+git ls-tree -r --name-only $NAME
+elif [ "$CMD" = "all" ]; then
+echo "riplet: /";
 git branch -a
 else
+echo "riplet: $NAME /";
 git branch -l
 fi;
+
 
 else
 
