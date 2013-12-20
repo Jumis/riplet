@@ -1,11 +1,10 @@
-folders.io riplet
+folders.io riplet: tomcat
 =================
 
+## tomcat7 on openjdk7 using auto deploy and many jar dependencies.
+
 Base services:
-* nginx with unbuffered client uploads.
-* postgresql standard
 * tomcat with postgresql jdbc unix sockets
-* memcached until elasticsearch transport works better
 
 Supporting:
 * ubuntu quantal (apt)
@@ -15,5 +14,5 @@ Using:
 * git-annex
 * docker
 * s3
-
+* folders.io jar dependencies.
 
