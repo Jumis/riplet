@@ -1,11 +1,7 @@
-folders.io riplet
+folders.io riplet: nginx
 =================
 
-Base services:
-* nginx with unbuffered client uploads.
-* postgresql standard
-* tomcat with postgresql jdbc unix sockets
-* memcached until elasticsearch transport works better
+## nginx with unbuffered client uploads.
 
 Supporting:
 * ubuntu quantal (apt)
