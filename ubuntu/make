@@ -1,0 +1,8 @@
+### foldersio nginx dependencies
+apt-get install openjdk-7-jre-headless tomcat7 -y
+/etc/init.d/tomcat stop;
+
+## init
+mkdir -p /etc/service/tomcat;
+cp /riplet/service/tomcat/run /etc/service/tomcat/run;
+chmod +x /etc/service/tomcat/bin/run;

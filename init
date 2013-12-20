@@ -1,0 +1,5 @@
+#!/bin/sh
+mkdir -p /data/instance;
+/riplet/service/tomcat/make 2>&1 | tee -a /data/instance/boot.log > /dev/null;
+ifconfig lo up;
+exec svscanboot;

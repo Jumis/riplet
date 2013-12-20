@@ -1,0 +1,8 @@
+#!/bin/sh
+export RUN_AS="tomcat"
+export JAVA_OPTS="-Xms32M -server -Xmx128m -verbosegc -Xloggc:/tmp/gc.log -Djava.awt.headless=true"
+export CATALINA_HOME="/usr/local/tomcat7"
+export CATALINA_OPTS="-Dfile.encoding=UTF-8 -Xms128M -Xmx256M -Djava.awt.headless=true"
+exec 2>&1
+exec setuidgid ${RUN_AS}  ${CATALINA_HOME}/bin/catalina.sh run
+

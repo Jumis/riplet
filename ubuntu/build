@@ -1,0 +1,8 @@
+### custom builds for tomcat dependencies
+
+apt-get install openjdk-7-jdk -y
+
+mkdir -p /build/ubuntu/tomcat;
+cd /build/ubuntu/tomcat;
+
+
