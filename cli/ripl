@@ -1,0 +1,48 @@
+#!/bin/bash
+
+### CLI Tools.
+PREV=$(pwd);
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+CMD=$1;
+
+### Env.
+NAME=$("$DIR/branch");
+
+### Riplet (ripl)
+
+if [ "$NAME" = "master" ]; then
+
+if [ "$CMD" = "ls" ]; then
+NAME=${2-"$NAME"};
+echo "riplet: $NAME /";
+git ls-tree -r --name-only $NAME
+elif [ "$CMD" = "all" ]; then
+echo "riplet: /";
+git branch -a
+else
+echo "riplet: $NAME /";
+git branch -l
+fi;
+
+
+else
+
+if [ "$CMD" = "sh" ]; then
+$DIR/sh "$@"
+
+elif [ "$CMD" = "docker" ]; then
+$DIR/docker "$@"
+
+elif [ "$CMD" = "image" ]; then
+$DIR/image "$@"
+
+else
+echo "riplet: $NAME /";
+echo "sh docker image";
+echo "sh: build the package and open a shell.";
+echo "docker: build the package and run an instance.";
+echo "image: build the package and return a container id.";
+fi;
+
+fi;
+
