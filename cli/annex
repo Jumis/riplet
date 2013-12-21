@@ -28,54 +28,77 @@ if [ "1" = "1" ]; then
 ACTION="build";
 APT="/riplet/service/$NAME/$TARGET/$ACTION.apt";
 DEPS="/riplet/annex/ubuntu";
-DEPS=$(mktemp -d);
+TEMP=$(mktemp -d);
 
-DEPS_SCRIPT=$(cat <<EOF
-mv /var/cache/apt/archives /var/cache/apt/archives-orig
-ln -s /riplet/annex/ubuntu /var/cache/apt/archives
-apt-get -d install \\\$(cat $APT) -y
+read -r -d '' RIPLET_ENV_ARGS <<EOF
+-cidfile $TEMP/$NAME.docker
+-v $BASEDIR:/riplet:rw
+-e RIPLET_HOME=/riplet
+-e APT_DEPS="$APT"
+foldersio-dev
 EOF
-);
 
-ANNEX_SCRIPT=$(cat <<EOF
-docker run -cidfile $DEPS/$NAME.docker -v $BASEDIR:/riplet:rw -e RIPLET_HOME=/riplet foldersio-dev /bin/bash -c "$DEPS_SCRIPT";
-EOF
-);
+cat <<'INLINE' > $TEMP/$NAME.sh;
+cat <<'SCRIPT' |
+if [ -f '/var/cache/apt/archives.annex' ]; then :
+else
+mv /var/cache/apt/archives /var/cache/apt/archives-origt
+ln -s $DEPS /var/cache/apt/archives.annex 
+ln -s /var/cache/apt/archives.annex /var/cache/apt/archives
+apt-get -d install $(cat $APT_DEPS) -y;
+fi
+SCRIPT
 
-echo "$ANNEX_SCRIPT" > $DEPS/$NAME.sh;
+INLINE
 
-echo $DEPS/$NAME.sh;
+echo "docker run $RIPLET_ENV_ARGS /bin/bash -" >> $TEMP/$NAME.sh;
+echo $TEMP/$NAME.sh;
 
 fi;
 
 if [ "1" = "1" ]; then
+
+### FIXME: Imports are more gracefully handled through environment vars.
 ### Dependencies
 
 ACTION="build";
 GITHUB="/riplet/service/$NAME/$TARGET/$ACTION.github";
 DEPS="/riplet/annex/github";
-DEPS=$(mktemp -d);
+TEMP=$(mktemp -d);
+TEMP_PID="$TEMP/$NAME.docker";
+TEMP_SH="$TEMP/$NAME.sh";
+RIPLET_HOME="/riplet";
 
-DEPS_SCRIPT=$(cat <<EOF
-for \\\$repo in \\\$(cat $GITHUB); do
-if [ -a "\\\$repo" ]; then
-git clone --separate-git-dir=$DEPS/$NAME.temp.git --depth 1 https://github.com/\\\$repo $DEPS/$NAME.temp.bin
-mkdir -p "$DEPS/\\\$repo";
-rmdir "$DEPS/\\\$repo";
-git --git-dir=$DEPS/$NAME.temp.git bundle create  "$DEPS/\\\$repo" --all
+read -r -d '' RIPLET_DOCKER_CMD <<EOF
+docker run
+ -cidfile $TEMP_PID
+ -v $BASEDIR:$RIPLET_HOME:rw
+ -e RIPLET_HOME=$RIPLET_HOME
+ -e GITHUB=$GITHUB"
+ -e DEPS=$DEPS
+foldersio-dev /bin/bash -
+EOF
+
+cat <<'INLINE' >> $TEMP_SH;
+cat <<'SCRIPT' |
+TEMP=$(mktemp -d);
+for $repo in $(cat $GITHUB); do
+if [ -a "$repo" ]; then
+git clone --separate-git-dir=$TEMP.git --depth 1 https://github.com/$repo $TEMP
+mkdir -p "$DEPS/$repo";
+rmdir "$DEPS/$repo";
+git --git-dir=$TEMP.git bundle create $TEMP.bundle --all
+tar -zcf $TEMP.tgz -C $TEMP
+mv $TEMP.tgz "$DEPS/$repo.tgz"
+mv $TEMP.bundle "$DEPS/$repo" 
 fi;
 done;
-EOF
-);
+SCRIPT
 
-ANNEX_SCRIPT=$(cat <<EOF
-docker run -cidfile $DEPS/$NAME.docker -v $BASEDIR:/riplet:rw -e RIPLET_HOME=/riplet foldersio-dev /bin/bash -c "$DEPS_SCRIPT";
-EOF
-);
+INLINE
 
-echo "$ANNEX_SCRIPT" > $DEPS/$NAME.sh;
-
-echo $DEPS/$NAME.sh;
+echo $RIPLET_DOCKER_CMD >> $TEMP_SH;
+echo $TEMP_SH;
 
 fi;
 
