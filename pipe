@@ -1,15 +1,16 @@
+#!/bin/bash
+
 mkdir -p /etc/service/nc;
 cat <<E > /etc/service/nc/run
 #!/bin/bash
-nc -k -l -p $(cat /riplet/service/nginx/ubuntu/make.port) | \
- grep -E -f /etc/service/nc/secure.mask | sh 2>&1
+cat <<E > /etc/service/nc/nginx.mask
+^: $(cat /data/instance/nginx.random);
+E
+nc -l -U /data/instance/nginx.pipe);
+ grep -E -f /etc/service/nc/nginx.mask | sh 2>&1
 E;
 
-cat <<E > /etc/service/nc/secure.mask
-^: $(hostname);
-E
-
 ifconfig lo up;
-chmod 700 /etc/instance/secure.mask;
+chmod 700 /etc/service/nc/nginx.mask
 chmod +x /etc/service/nc/run
 
