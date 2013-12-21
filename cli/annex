@@ -30,10 +30,10 @@ APT="/riplet/service/$NAME/$TARGET/$ACTION.apt";
 DEPS="/riplet/annex/ubuntu";
 DEPS=$(mktemp -d);
 
-DEPS_SCRIPT=$(<<EOF
+DEPS_SCRIPT=$(cat <<EOF
 mv /var/cache/apt/archives /var/cache/apt/archives-orig
 ln -s /riplet/annex/ubuntu /var/cache/apt/archives
-apt-get -d install \$(cat $APT)
+apt-get -d install \\\$(cat $APT) -y
 EOF
 );
 
@@ -47,6 +47,39 @@ echo "$ANNEX_SCRIPT" > $DEPS/$NAME.sh;
 echo $DEPS/$NAME.sh;
 
 fi;
+
+if [ "1" = "1" ]; then
+### Dependencies
+
+ACTION="build";
+GITHUB="/riplet/service/$NAME/$TARGET/$ACTION.github";
+DEPS="/riplet/annex/github";
+DEPS=$(mktemp -d);
+
+DEPS_SCRIPT=$(cat <<EOF
+for \\\$repo in \\\$(cat $GITHUB); do
+if [ -a "\\\$repo" ]; then
+git clone --separate-git-dir=$DEPS/$NAME.temp.git --depth 1 https://github.com/\\\$repo $DEPS/$NAME.temp.bin
+mkdir -p "$DEPS/\\\$repo";
+rmdir "$DEPS/\\\$repo";
+git --git-dir=$DEPS/$NAME.temp.git bundle create  "$DEPS/\\\$repo" --all
+fi;
+done;
+EOF
+);
+
+ANNEX_SCRIPT=$(cat <<EOF
+docker run -cidfile $DEPS/$NAME.docker -v $BASEDIR:/riplet:rw -e RIPLET_HOME=/riplet foldersio-dev /bin/bash -c "$DEPS_SCRIPT";
+EOF
+);
+
+echo "$ANNEX_SCRIPT" > $DEPS/$NAME.sh;
+
+echo $DEPS/$NAME.sh;
+
+fi;
+
+
 
 
 if [ "0" = "1" ]; then
