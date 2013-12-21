@@ -101,8 +101,12 @@ fi;
 
 for repo in $(cat $GITHUB_DEPS); do :;
 if [ -f "$RIPLET_ANNEX_GITHUB/$repo" ]; then :; else :;
+uri="https://github.com/$repo";
+annex_uri="$RIPLET_ANNEX_URI/$uri";
+if [ -f "$annex_uri" ]; then :; uri="$annex_uri"; fi;
+
 command -v git >/dev/null 2>&1 || { riplet_annex_apt; apt-get install git -y; }
-git clone --separate-git-dir=$TEMP.git --depth 1 https://github.com/$repo $TEMP;
+git clone --separate-git-dir=$TEMP.git --depth 1 $uri $TEMP;
 git --git-dir=$TEMP.git bundle create $TEMP.bundle --all;
 tar -zcf $TEMP.tgz -C $TEMP .;
 
@@ -111,7 +115,13 @@ rmdir "$RIPLET_ANNEX_GITHUB/$repo";
 mv $TEMP.tgz "$RIPLET_ANNEX_GITHUB/$repo.tgz";
 mv $TEMP.bundle "$RIPLET_ANNEX_GITHUB/$repo";
 rm -rf $TEMP $TEMP.git $TEMP.bundle $TEMP.tgz;
+
+if [ -f "$annex_uri" ]; then :; else :;
+mkdir -p "$annex_uri";
+rmdir "$annex_uri";
+ln -s "$RIPLET_ANNEX_GITHUB/$repo" "$annex_uri";
 fi;
+
 done;
 echo "git done";
 
