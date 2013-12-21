@@ -119,9 +119,10 @@ rm -rf $TEMP $TEMP.git $TEMP.bundle $TEMP.tgz;
 if [ -f "$annex_uri" ]; then :; else :;
 mkdir -p "$annex_uri";
 rmdir "$annex_uri";
-ln -s "$RIPLET_ANNEX_GITHUB/$repo" "$annex_uri";
+cp "$RIPLET_ANNEX_GITHUB/$repo" "$annex_uri";
 fi;
 
+fi;
 done;
 echo "git done";
 
