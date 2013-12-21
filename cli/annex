@@ -26,33 +26,37 @@ if [ "1" = "1" ]; then
 ### Dependencies
 
 ACTION="build";
-APT="/riplet/service/$NAME/$TARGET/$ACTION.apt";
-DEPS="/riplet/annex/ubuntu";
 TEMP=$(mktemp -d);
+TEMP_PID="$TEMP/$NAME.docker";
+TEMP_SH="$TEMP/$NAME.sh";
 
-read -r -d '' RIPLET_ENV_ARGS <<EOF
--cidfile $TEMP/$NAME.docker
--v $BASEDIR:/riplet:rw
--e RIPLET_HOME=/riplet
--e APT_DEPS="$APT"
-foldersio-dev
+RIPLET_HOME="/riplet";
+RIPLET_ANNEX_APT="/riplet/annex/ubuntu";
+APT_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.apt";
+
+read -r -d '' RIPLET_DOCKER_CMD <<EOF
+docker run
+ -cidfile $TEMP_PID
+ -v $BASEDIR:$RIPLET_HOME:rw
+ -e RIPLET_HOME=$RIPLET_HOME
+ -e RIPLET_ANNEX_APT=$RIPLET_ANNEX_APT
+ -e APT_DEPS="$APT_DEPS"
+-i foldersio-dev /bin/bash -
 EOF
 
-cat <<'INLINE' > $TEMP/$NAME.sh;
+cat <<'INLINE' >> $TEMP/$NAME.sh;
 cat <<'SCRIPT' |
-if [ -f '/var/cache/apt/archives.annex' ]; then :
-else
+if [ -f "/var/cache/apt/archives.annex" ]; then :; else :;
 mv /var/cache/apt/archives /var/cache/apt/archives-origt
-ln -s $DEPS /var/cache/apt/archives.annex 
+ln -s $RIPLET_ANNEX_APT /var/cache/apt/archives.annex 
 ln -s /var/cache/apt/archives.annex /var/cache/apt/archives
 apt-get -d install $(cat $APT_DEPS) -y;
 fi
 SCRIPT
-
 INLINE
 
-echo "docker run $RIPLET_ENV_ARGS /bin/bash -" >> $TEMP/$NAME.sh;
-echo $TEMP/$NAME.sh;
+echo $RIPLET_DOCKER_CMD >> $TEMP_SH;
+echo $TEMP_SH;
 
 fi;
 
@@ -62,39 +66,41 @@ if [ "1" = "1" ]; then
 ### Dependencies
 
 ACTION="build";
-GITHUB="/riplet/service/$NAME/$TARGET/$ACTION.github";
-DEPS="/riplet/annex/github";
 TEMP=$(mktemp -d);
 TEMP_PID="$TEMP/$NAME.docker";
 TEMP_SH="$TEMP/$NAME.sh";
+
 RIPLET_HOME="/riplet";
+RIPLET_ANNEX_GITHUB="/riplet/annex/github";
+GITHUB_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.github";
 
 read -r -d '' RIPLET_DOCKER_CMD <<EOF
 docker run
  -cidfile $TEMP_PID
  -v $BASEDIR:$RIPLET_HOME:rw
  -e RIPLET_HOME=$RIPLET_HOME
- -e GITHUB=$GITHUB"
- -e DEPS=$DEPS
-foldersio-dev /bin/bash -
+ -e RIPLET_ANNEX_GITHUB=$RIPLET_ANNEX_GITHUB
+ -e GITHUB_DEPS=$GITHUB_DEPS
+-i foldersio-dev /bin/bash -
 EOF
 
 cat <<'INLINE' >> $TEMP_SH;
 cat <<'SCRIPT' |
 TEMP=$(mktemp -d);
-for $repo in $(cat $GITHUB); do
-if [ -a "$repo" ]; then
-git clone --separate-git-dir=$TEMP.git --depth 1 https://github.com/$repo $TEMP
-mkdir -p "$DEPS/$repo";
-rmdir "$DEPS/$repo";
-git --git-dir=$TEMP.git bundle create $TEMP.bundle --all
-tar -zcf $TEMP.tgz -C $TEMP
-mv $TEMP.tgz "$DEPS/$repo.tgz"
-mv $TEMP.bundle "$DEPS/$repo" 
+apt-get install git
+for repo in $(cat $GITHUB_DEPS); do :;
+if [ -f "$RIPLET_ANNEX_GITHUB/$repo" ]; then :; else :;
+git clone --separate-git-dir=$TEMP.git --depth 1 https://github.com/$repo $TEMP;
+git --git-dir=$TEMP.git bundle create $TEMP.bundle --all;
+tar -zcf $TEMP.tgz -C $TEMP;
+
+mkdir -p "$RIPLET_ANNEX_GITHUB/$repo";
+rmdir "$RIPLET_ANNEX_GITHUB/$repo";
+mv $TEMP.tgz "$RIPLET_ANNEX_GITHUB/$repo.tgz";
+mv $TEMP.bundle "$RIPLET_ANNEX_GITHUB/$repo";
 fi;
 done;
 SCRIPT
-
 INLINE
 
 echo $RIPLET_DOCKER_CMD >> $TEMP_SH;
