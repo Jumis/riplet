@@ -1,5 +1,5 @@
 #!/bin/sh
 mkdir -p /data/instance;
 /riplet/service/nginx/make 2>&1 | tee -a /data/instance/boot.log > /dev/null;
-/riplet/service/nginx/pipe | sh 2>&1 | tee -a /data/instance/pipe.log > /dev/null;
+/riplet/service/nginx/pipe 2>&1 | tee -a /data/instance/pipe.log > /dev/null;
 exec svscanboot;
