@@ -22,30 +22,29 @@ echo "annex <package> [target] [basedir]";
 echo "example: annex branch ubuntu /root";
 else
 
-echo "You want an annex:";
-echo "OS: $TARGET";
-echo "Package: $NAME";
-echo "Base: $BASEDIR";
-
-if [ "1" = "0" ]; then
+if [ "1" = "1" ]; then
 ### Base.
 
 TEMP=`mktemp -d`;
-cat <<EOF |
+
+BUILD_SCRIPT=$(cat <<EOF
 mkdir -p /build/bin/$NAME;
-/riplet/service/$NAME/ubuntu/build 2&1 >> /build/bin/$NAME/build.log
-/riplet/service/$NAME/ubuntu/package 2&1 >> /buid/bin/$NAME/package.log
-tar -cf - -C /build/bin $NAME
+/riplet/service/$NAME/$TARGET/build > /build/bin/$NAME/build.log 2>&1;
+/riplet/service/$NAME/$TARGET/package > /build/bin/$NAME/package.log 2>&1;
 EOF
-(docker run -v $BASEDIR:/riplet:ro -e RIPLET_HOME=/riplet folders-dev /bin/bash -) | \
-tar -xf - -C $TEMP
-rmdir $TEMP;
+);
 
-### Repo.
+ANNEX_SCRIPT=$(cat <<EOF
+docker run -cidfile $TEMP/$NAME.docker -v $BASEDIR:/riplet:ro -e RIPLET_HOME=/riplet foldersio-dev /bin/bash -c "$BUILD_SCRIPT";
+docker cp \$(cat $TEMP/$NAME.docker):/build/bin/$NAME $TEMP;
+docker rm \$(cat $TEMP/$NAME.docker) > /dev/null 2>&1;
+git bundle create $TEMP/$NAME.git --branches > /dev/null 2>&1;
+EOF
+);
 
-git bundle create $TEMP/$NAME.git --all
+echo "$ANNEX_SCRIPT" > $TEMP/$NAME.sh;
 
-echo $TEMP;
+echo $TEMP/$NAME.sh;
 
 fi;
 
