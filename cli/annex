@@ -72,6 +72,8 @@ TEMP_SH="$TEMP/$NAME.sh";
 RIPLET_HOME="/riplet";
 RIPLET_ANNEX_GITHUB="/riplet/annex/github";
 GITHUB_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.github";
+RIPLET_ANNEX_URI="/riplet/annex/uri";
+URI_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.uri";
 
 read -r -d '' RIPLET_DOCKER_CMD <<EOF
 docker run
@@ -80,22 +82,26 @@ docker run
  -e RIPLET_HOME=$RIPLET_HOME
  -e RIPLET_ANNEX_GITHUB=$RIPLET_ANNEX_GITHUB
  -e RIPLET_ANNEX_APT=$RIPLET_ANNEX_APT
+ -e RIPLET_ANNEX_URI=$RIPLET_ANNEX_URI
  -e GITHUB_DEPS=$GITHUB_DEPS
+ -e URI_DEPS=$URI_DEPS
 -i foldersio-dev /bin/bash -
 EOF
 
 cat <<'INLINE' >> $TEMP_SH;
 cat <<'SCRIPT' |
 TEMP=$(mktemp -d);
+function riplet_annex_apt {
 if [ -f "/var/cache/apt/archives.annex" ]; then :; else :;
 mv /var/cache/apt/archives /var/cache/apt/archives-origt
 ln -s $RIPLET_ANNEX_APT /var/cache/apt/archives.annex 
 ln -s /var/cache/apt/archives.annex /var/cache/apt/archives
 fi;
+}
 
-apt-get install git -y
 for repo in $(cat $GITHUB_DEPS); do :;
 if [ -f "$RIPLET_ANNEX_GITHUB/$repo" ]; then :; else :;
+command -v git >/dev/null 2>&1 || { riplet_annex_apt; apt-get install git -y; }
 git clone --separate-git-dir=$TEMP.git --depth 1 https://github.com/$repo $TEMP;
 git --git-dir=$TEMP.git bundle create $TEMP.bundle --all;
 tar -zcf $TEMP.tgz -C $TEMP .;
@@ -107,6 +113,18 @@ mv $TEMP.bundle "$RIPLET_ANNEX_GITHUB/$repo";
 rm -rf $TEMP $TEMP.git $TEMP.bundle $TEMP.tgz;
 fi;
 done;
+echo "git done";
+
+for uri in $(cat $URI_DEPS); do :;
+if [ -f "$RIPLET_ANNEX_URI/$repo" ]; then :; else :;
+command -v curl >/dev/null 2>&1 || { riplet_annex_apt; apt-get install curl -y; }
+curl -S -L "$uri" -o $TEMP;
+mkdir -p "$RIPLET_ANNEX_URI/$repo";
+rmdir "$RIPLET_ANNEX_URI/$repo";
+mv $TEMP "$RIPLET_ANNEX_URI/$repo";
+fi;
+done;
+echo "curl done";
 SCRIPT
 INLINE
 
