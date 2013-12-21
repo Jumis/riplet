@@ -7,24 +7,12 @@ mv /etc/nginx /etc/nginx-old;
 
 ## etc
 mkdir -p /etc/nginx;
-tar -zxf /riplet/annex/nginx/ubuntu/etc-nginx.tgz -C /etc/nginx --strip=1;
 mkdir -p /etc/nginx/conf.d;
-cp /riplet/service/nginx/bin/beta.conf /etc/nginx/conf.d/;
-cp /riplet/service/nginx/bin/nginx.conf /etc/nginx/;
+tar -zxf /riplet/annex/nginx/ubuntu/etc-nginx.tgz -C /etc/nginx --strip=1;
 
 ## bin
 cp /riplet/annex/nginx/ubuntu/nginx /usr/sbin/nginx;
 chmod +x /usr/sbin/nginx;
-
-## var
-mkdir -p /web;
-mkdir -p /srv/ceph/osd/Downloads;
-mkdir -p /srv/ceph/osd/Cache;
-mkdir -p /web/sites/beta.folders.io/web;
-
-## key
-cp /riplet/service/nginx/bin/foldersio.pem /etc/nginx/conf.d/cert.pem
-cp /riplet/service/nginx/bin/foldersio.key /etc/nginx/conf.d/cert.key
 
 ### mehr.
 mkdir /var/lib/nginx/tmp
