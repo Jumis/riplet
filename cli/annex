@@ -119,7 +119,7 @@ for uri in $(cat $URI_DEPS); do :;
 if [ -f "$RIPLET_ANNEX_URI/$uri" ]; then :; else :;
 command -v curl >/dev/null 2>&1 || { riplet_annex_apt; apt-get install curl -y; }
 rm -rf $TEMP;
-curl -S -L "$uri" -o $TEMP;
+curl -s -S -L "$uri" -o $TEMP;
 mkdir -p "$RIPLET_ANNEX_URI/$uri";
 rmdir "$RIPLET_ANNEX_URI/$uri";
 mv $TEMP "$RIPLET_ANNEX_URI/$uri";
