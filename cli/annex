@@ -23,6 +23,33 @@ echo "example: annex branch ubuntu /root";
 else
 
 if [ "1" = "1" ]; then
+### Dependencies
+
+ACTION="build";
+APT="/riplet/service/$NAME/$TARGET/$ACTION.apt";
+DEPS="/riplet/annex/ubuntu";
+DEPS=$(mktemp -d);
+
+DEPS_SCRIPT=$(<<EOF
+mv /var/cache/apt/archives /var/cache/apt/archives-orig
+ln -s /riplet/annex/ubuntu /var/cache/apt/archives
+apt-get -d install \$(cat $APT)
+EOF
+);
+
+ANNEX_SCRIPT=$(cat <<EOF
+docker run -cidfile $DEPS/$NAME.docker -v $BASEDIR:/riplet:rw -e RIPLET_HOME=/riplet foldersio-dev /bin/bash -c "$DEPS_SCRIPT";
+EOF
+);
+
+echo "$ANNEX_SCRIPT" > $DEPS/$NAME.sh;
+
+echo $DEPS/$NAME.sh;
+
+fi;
+
+
+if [ "0" = "1" ]; then
 ### Base.
 
 TEMP=`mktemp -d`;
