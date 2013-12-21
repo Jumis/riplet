@@ -62,8 +62,7 @@ fi;
 
 if [ "1" = "1" ]; then
 
-### FIXME: Imports are more gracefully handled through environment vars.
-### Dependencies
+#### Expects that apt ran for git binary.
 
 ACTION="build";
 TEMP=$(mktemp -d);
@@ -80,6 +79,7 @@ docker run
  -v $BASEDIR:$RIPLET_HOME:rw
  -e RIPLET_HOME=$RIPLET_HOME
  -e RIPLET_ANNEX_GITHUB=$RIPLET_ANNEX_GITHUB
+ -e RIPLET_ANNEX_APT=$RIPLET_ANNEX_APT
  -e GITHUB_DEPS=$GITHUB_DEPS
 -i foldersio-dev /bin/bash -
 EOF
@@ -87,17 +87,24 @@ EOF
 cat <<'INLINE' >> $TEMP_SH;
 cat <<'SCRIPT' |
 TEMP=$(mktemp -d);
-apt-get install git
+if [ -f "/var/cache/apt/archives.annex" ]; then :; else :;
+mv /var/cache/apt/archives /var/cache/apt/archives-origt
+ln -s $RIPLET_ANNEX_APT /var/cache/apt/archives.annex 
+ln -s /var/cache/apt/archives.annex /var/cache/apt/archives
+fi;
+
+apt-get install git -y
 for repo in $(cat $GITHUB_DEPS); do :;
 if [ -f "$RIPLET_ANNEX_GITHUB/$repo" ]; then :; else :;
 git clone --separate-git-dir=$TEMP.git --depth 1 https://github.com/$repo $TEMP;
 git --git-dir=$TEMP.git bundle create $TEMP.bundle --all;
-tar -zcf $TEMP.tgz -C $TEMP;
+tar -zcf $TEMP.tgz -C $TEMP .;
 
 mkdir -p "$RIPLET_ANNEX_GITHUB/$repo";
 rmdir "$RIPLET_ANNEX_GITHUB/$repo";
 mv $TEMP.tgz "$RIPLET_ANNEX_GITHUB/$repo.tgz";
 mv $TEMP.bundle "$RIPLET_ANNEX_GITHUB/$repo";
+rm -rf $TEMP $TEMP.git $TEMP.bundle $TEMP.tgz;
 fi;
 done;
 SCRIPT
