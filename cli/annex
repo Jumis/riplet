@@ -189,7 +189,7 @@ SCRIPT
 $(echo $RIPLET_DOCKER_CMD);
 
 git bundle create $TEMP/$NAME.git --branches > /dev/null 2>&1;
-mv $RIPLET_INSTANCE $RIPLET_ANNEX_HOME/$NAME;
+mv $TEMP/$NAME $RIPLET_ANNEX_HOME/$NAME;
 fi;
 INLINE
 
