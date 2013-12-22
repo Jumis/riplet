@@ -24,7 +24,7 @@ GITOPT_BASEURL="https://github.com";
 if [ "$#" = "2" -a "$1" = "clone" ]; then :;
 GITOPT_URL=${2/$GITOPT_BASEURL/""};
 GITOPT_ANNEX_URI="$RIPLET_ANNEX_GITHUB/$GITOPT_URL";
-GITOPT_BASENAME=$(basename "$GITOPT_ANNEX_URI");
+GITOPT_BASENAME=$(basename "$GITOPT_ANNEX_URI" | rev | cut -f 2- -d '.' | rev);
 mkdir "$GITOPT_BASENAME";
 tar -xf "$GITOPT_ANNEX_URI.tgz" -C "$GITOPT_BASENAME";
 
