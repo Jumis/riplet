@@ -34,6 +34,8 @@ RIPLET_HOME="/riplet";
 RIPLET_ANNEX_APT="/riplet/annex/ubuntu";
 APT_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.apt";
 
+mkdir -p "$BASEDIR/annex/ubuntu/partial";
+
 read -r -d '' RIPLET_DOCKER_CMD <<EOF
 docker run
  -cidfile $TEMP_PID
@@ -148,29 +150,48 @@ fi;
 
 
 
-if [ "0" = "1" ]; then
+if [ "1" = "1" ]; then
 ### Base.
 
 TEMP=`mktemp -d`;
+TEMP_PID="$TEMP/$NAME.docker";
+TEMP_SH="$TEMP/$NAME.sh";
 
-BUILD_SCRIPT=$(cat <<EOF
+RIPLET_INSTANCE="/data/instance";
+RIPLET_ANNEX_HOME="/root/annex";
+
+read -r -d '' RIPLET_DOCKER_CMD <<EOF
+docker run
+ -n=false -dns 0.0.0.0
+ -cidfile $TEMP_PID
+ -e RIPLET_HOME=$RIPLET_HOME
+ -v $BASEDIR:$RIPLET_HOME:ro
+ -e RIPLET_ANNEX_GITHUB=$RIPLET_ANNEX_GITHUB
+ -e RIPLET_ANNEX_APT=$RIPLET_ANNEX_APT
+ -e RIPLET_ANNEX_URI=$RIPLET_ANNEX_URI
+ -e RIPLET_ANNEX_NGINX=$RIPLET_ANNEX_URI
+ -v $TEMP:$RIPLET_INSTANCE:rw
+ -e RIPLET_INSTANCE=$RIPLET_INSTANCE
+-i foldersio-dev /bin/bash -
+EOF
+
+cat <<INLINE >> $TEMP_SH;
+if [ -f "$RIPLET_ANNEX_HOME/$NAME" ]; then : echo "already made"; else
+
+cat <<SCRIPT |
 mkdir -p /build/bin/$NAME;
 /riplet/service/$NAME/$TARGET/build > /build/bin/$NAME/build.log 2>&1;
 /riplet/service/$NAME/$TARGET/package > /build/bin/$NAME/package.log 2>&1;
-EOF
-);
+mv /build/bin/$NAME $RIPLET_INSTANCE
+SCRIPT
+$(echo $RIPLET_DOCKER_CMD);
 
-ANNEX_SCRIPT=$(cat <<EOF
-docker run -cidfile $TEMP/$NAME.docker -v $BASEDIR:/riplet:ro -e RIPLET_HOME=/riplet foldersio-dev /bin/bash -c "$BUILD_SCRIPT";
-docker cp \$(cat $TEMP/$NAME.docker):/build/bin/$NAME $TEMP;
-docker rm \$(cat $TEMP/$NAME.docker) > /dev/null 2>&1;
 git bundle create $TEMP/$NAME.git --branches > /dev/null 2>&1;
-EOF
-);
+mv $RIPLET_INSTANCE $RIPLET_ANNEX_HOME/$NAME;
+fi;
+INLINE
 
-echo "$ANNEX_SCRIPT" > $TEMP/$NAME.sh;
-
-echo $TEMP/$NAME.sh;
+echo $TEMP_SH;
 
 fi;
 
