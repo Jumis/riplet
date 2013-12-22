@@ -72,7 +72,7 @@ CURL_BIN=/usr/bin/curl-original;
 ### use cp for curl -O
 if [ "$#" = "2" -a "$1" = "-O" ]; then :;
 CURLOPT_URL="$2";
-CURLOPT_ANNEX_URI="file:$RIPLET_ANNEX_URI/$CURLOPT_URL";
+CURLOPT_ANNEX_URI="$RIPLET_ANNEX_URI/$CURLOPT_URL";
 cp $CURLOPT_ANNEX_URI .;
 
 else :;
