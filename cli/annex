@@ -180,6 +180,7 @@ if [ -f "$RIPLET_ANNEX_HOME/$NAME" ]; then : echo "already made"; else
 
 cat <<SCRIPT |
 mkdir -p /build/bin/$NAME;
+/riplet/service/$NAME/deps > /build/bin/$NAME/deps.log 2>&1;
 /riplet/service/$NAME/$TARGET/build > /build/bin/$NAME/build.log 2>&1;
 /riplet/service/$NAME/$TARGET/package > /build/bin/$NAME/package.log 2>&1;
 mv /build/bin/$NAME $RIPLET_INSTANCE

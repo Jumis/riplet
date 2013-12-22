@@ -1,0 +1,64 @@
+#!/bin/bash
+### In all cases, we could use dnsmasq and nginx to proxy requests into a cache.
+
+### Link apt cache directory. We could just use docker volume.
+if [ -d "/riplet/annex/ubuntu" ]; then :;
+if [ -d "/var/cache/apt/archives" ]; then :;
+mv -f /var/cache/apt/archives /var/cache/apt/archives-original;
+fi;
+ln -s /riplet/annex/ubuntu /var/cache/apt/archives;
+fi;
+
+### Wrap git. We could just use tar.
+if [ -d "/riplet/annex/github" ]; then :;
+if [ -f "/usr/bin/git-original" ]; then :; else :;
+apt-get install git -y
+mv /usr/bin/git /usr/bin/git-original;
+
+cat << 'PROXY' > /usr/bin/git-annex;
+#!/bin/bash
+function git_annex() {
+# export GIT_SSL_NO_VERIFY=1;
+RIPLET_ANNEX_URI=${RIPLET_ANNEX_URI-"/riplet/annex/uri"};
+GIT_BIN=/usr/bin/git-original;
+GITOPT_ARGS=$(echo $@)
+GITOPT_URL="https://github.com";
+GITOPT_ANNEX_URI="file:$RIPLET_ANNEX_URI/$GITOPT_URL";
+$GIT_BIN ${GITOPT_ARGS/$GITOPT_URL/$GITOPT_ANNEX_URI}
+}
+git_annex $@
+PROXY
+
+chmod +x /usr/bin/git-annex;
+ln -s /usr/bin/git-annex /usr/bin/git
+
+fi; 
+fi;
+
+### Wrap curl. We could just use cp.
+if [ -d "/riplet/annex/uri" ]; then
+if [ -f "/usr/bin/curl-original" ]; then :; else :;
+
+apt-get install curl -y
+mv /usr/bin/curl /usr/bin/curl-original;
+touch /usr/bin/curl-annex;
+
+cat << 'PROXY' > /usr/bin/curl-annex;
+#!/bin/bash
+function curl_annex() {
+RIPLET_ANNEX_URI=${RIPLET_ANNEX_URI-"/riplet/annex/uri"};
+CURL_BIN=/usr/bin/curl-original;
+CURLOPT_ARGS=$(echo $@);
+CURLOPT_URL=$($CURL_BIN $CURLOPT_ARGS --libcurl - -s --proxy 0:0 | fgrep CURLOPT_URL | cut -f 2 -d '"');
+CURLOPT_ANNEX_URI="file:$RIPLET_ANNEX_URI/$CURLOPT_URL";
+$CURL_BIN ${CURLOPT_ARGS/$CURLOPT_URL/$CURLOPT_ANNEX_URI};
+};
+curl_annex $@;
+PROXY
+
+chmod +x /usr/bin/curl;
+ln -s /usr/bin/curl-annex /usr/bin/curl
+
+fi;
+fi;
+
