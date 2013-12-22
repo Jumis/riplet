@@ -176,7 +176,7 @@ docker run
 EOF
 
 cat <<INLINE >> $TEMP_SH;
-if [ -f "$RIPLET_ANNEX_HOME/$NAME" ]; then : echo "already made"; else
+if [ -d "$RIPLET_ANNEX_HOME/$NAME" ]; then : echo "already made"; else
 
 cat <<SCRIPT |
 mkdir -p /build/bin/$NAME;
