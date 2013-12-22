@@ -21,7 +21,7 @@ RIPLET_ANNEX_GITHUB=${RIPLET_ANNEX_GITHUB-"/riplet/annex/github"};
 GITOPT_BASEURL="https://github.com";
 
 ## use tar for git clone
-if [ "$#" -eq "2" -a "$1" -eq "clone" ]; then :;
+if [ "$#" = "2" -a "$1" = "clone" ]; then :;
 GITOPT_URL=${2/$GITOPT_BASEURL/""};
 GITOPT_ANNEX_URI="file:$RIPLET_ANNEX_GITHUB/$GITOPT_URL";
 GITOPT_BASENAME=$(basename "$GITOPT_URI");
@@ -71,7 +71,7 @@ RIPLET_ANNEX_URI=${RIPLET_ANNEX_URI-"/riplet/annex/uri"};
 CURL_BIN=/usr/bin/curl-original;
 
 ### use cp for curl -O
-if [ "$#" -eq "2" -a "$1" -eq "-O" ]; then :;
+if [ "$#" = "2" -a "$1" = "-O" ]; then :;
 CURLOPT_URL="$2";
 CURLOPT_ANNEX_URI="file:$RIPLET_ANNEX_URI/$CURLOPT_URL";
 cp $CURLOPT_ANNEX_URI .;
