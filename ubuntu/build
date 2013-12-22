@@ -1,6 +1,10 @@
 ### custom nginx build
 
-apt-get install gcc make libpq-dev libpcre3-dev libxml2-dev libxslt1-dev libgd2-noxpm-dev libgeoip-dev curl git patch -y
+DEPS="gcc make libpq-dev libpcre3-dev libxml2-dev libxslt1-dev libgd2-noxpm-dev libgeoip-dev patch";
+command -v git >/dev/null 2>&1 || { DEPS="$DEPS git"; };
+command -v curl >/dev/null 2>&1 || { DEPS="$DEPS curl"; };
+
+apt-get install $DEPS -y;
 
 mkdir -p /build/ubuntu/nginx;
 cd /build/ubuntu/nginx;
