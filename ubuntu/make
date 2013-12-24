@@ -1,6 +1,7 @@
 ### foldersio nginx dependencies
 apt-get install openjdk-7-jre-headless tomcat7 libtcnative-1 daemontools -y
 /etc/init.d/tomcat7 stop;
+useradd --no-create-home tomcat;
 
 ## init
 mkdir -p /etc/service/tomcat;
