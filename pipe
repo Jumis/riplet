@@ -1,7 +1,9 @@
 #!/bin/bash
 
+### just use lxc-attach or netcat-traditional.
+if [ "0" = "1" ]; then :;
 mkdir -p /etc/service/nc;
-cat <<PIPE > /etc/service/nc/run
+cat <<'PIPE' > /etc/service/nc/run
 #!/bin/bash
 cat <<MASK > /etc/service/nc/nginx.mask
 ^: $(cat /data/instance/nginx.random);
@@ -11,6 +13,6 @@ exec nc -l -U /data/instance/nginx.pipe | \
 PIPE
 
 ifconfig lo up;
-chmod 700 /etc/service/nc/nginx.mask
-chmod +x /etc/service/nc/run
-
+chmod 700 /etc/service/nc/nginx.mask;
+chmod +x /etc/service/nc/run;
+fi;

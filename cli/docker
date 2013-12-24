@@ -12,7 +12,8 @@ TEMP=$(mktemp -d);
 TEMP_PID="$TEMP/$NAME.docker";
 TEMP_RAND=$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32);
 
-echo -n "$TEMP_RAND" > $TEMP/$NAME.random
+touch $TEMP/$NAME.random; chmod 600 $TEMP/$NAME.random;
+echo -n "$TEMP_RAND" > $TEMP/$NAME.random;
 
 read -r -d '' RIPLET_DOCKER_CMD <<EOF
 docker run
