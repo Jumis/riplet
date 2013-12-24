@@ -1,1 +1,1 @@
-postgresql-9.1 postgresql-9.1-pgmemcache postgresql-contrib-9.1
+postgresql-9.1 postgresql-9.1-pgmemcache postgresql-contrib-9.1 libxslt1.1 libossp-uuid16 daemontools

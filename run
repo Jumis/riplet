@@ -1,4 +1,4 @@
 #!/bin/sh
 exec 2>&1;
-exec setuidgid postgres postmaster
+exec setuidgid postgres /usr/lib/postgresql/9.3/bin/postmaster
 
