@@ -1,0 +1,6 @@
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.3/libpq5_9.3.2-1.pgdg12.4%2b1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.3/postgresql-9.3_9.3.2-1.pgdg12.4%2b1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.3/postgresql-contrib-9.3_9.3.2-1.pgdg12.4%2b1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.3/postgresql-client-9.3_9.3.2-1.pgdg12.4%2b1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-common/postgresql-common_151.pgdg12.4%2b1_all.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-common/postgresql-client-common_151.pgdg12.4%2b1_all.deb
