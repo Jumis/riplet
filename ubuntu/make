@@ -1,5 +1,5 @@
 ### foldersio nginx dependencies
-apt-get install openjdk-7-jre-headless tomcat7 -y
+apt-get install openjdk-7-jre-headless tomcat7 libtcnative-1 -y
 /etc/init.d/tomcat stop;
 
 ## init
