@@ -8,7 +8,7 @@ if [ -n "$1" ]; then
 ENTRY="service/$1/init";
 
 if [ -f "$BASEDIR/$ENTRY" ]; then
-TEMP=$(mkdir -d);
+TEMP=$(mktemp -d);
 TEMP_PID="$TEMP/$NAME.docker";
 TEMP_RAND=$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32);
 
@@ -25,7 +25,8 @@ docker run
 -d foldersio-dev $RIPLET_HOME/$ENTRY
 EOF
 
-$($RIPLET_DOCKER_CMD)
+echo $RIPLET_DOCKER_CMD;
+## echo $($RIPLET_DOCKER_CMD)
 
 else
 echo "riplet error: Service file not found: $BASEDIR/$ENTRY";

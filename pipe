@@ -1,14 +1,14 @@
 #!/bin/bash
 
 mkdir -p /etc/service/nc;
-cat <<E > /etc/service/nc/run
+cat <<PIPE > /etc/service/nc/run
 #!/bin/bash
-cat <<E > /etc/service/nc/nginx.mask
+cat <<MASK > /etc/service/nc/nginx.mask
 ^: $(cat /data/instance/nginx.random);
-E
-nc -l -U /data/instance/nginx.pipe);
+MASK
+exec nc -l -U /data/instance/nginx.pipe | \
  grep -E -f /etc/service/nc/nginx.mask | sh 2>&1
-E;
+PIPE
 
 ifconfig lo up;
 chmod 700 /etc/service/nc/nginx.mask

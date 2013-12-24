@@ -1,1 +1,1 @@
-nginx libpq5 libpcre3
+nginx libpq5 libpcre3 daemontools

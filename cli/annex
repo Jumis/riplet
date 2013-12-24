@@ -32,10 +32,10 @@ TEMP_PID="$TEMP/$NAME.docker";
 TEMP_SH="$TEMP/$NAME.sh";
 
 RIPLET_HOME="/riplet";
-RIPLET_ANNEX_APT="/riplet/annex/ubuntu";
+RIPLET_ANNEX_APT="/riplet/annex/$TARGET";
 APT_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.apt";
 
-mkdir -p "$BASEDIR/annex/ubuntu/partial";
+mkdir -p "$BASEDIR/annex/$TARGET/partial";
 
 read -r -d '' RIPLET_DOCKER_CMD <<EOF
 docker run
@@ -177,7 +177,7 @@ docker run
 EOF
 
 cat <<INLINE >> $TEMP_SH;
-if [ -d "$RIPLET_ANNEX_HOME/$NAME" ]; then : echo "already made"; else
+if [ -d "$RIPLET_ANNEX_HOME/$NAME/$TARGET" ]; then : echo "already made"; else
 
 cat <<SCRIPT |
 mkdir -p /build/bin/$NAME;
@@ -190,7 +190,8 @@ SCRIPT
 $(echo $RIPLET_DOCKER_CMD);
 
 git bundle create $TEMP/$NAME.git --branches > /dev/null 2>&1;
-mv $TEMP/$NAME $RIPLET_ANNEX_HOME/$NAME;
+mkdir -p  $RIPLET_ANNEX_HOME/$NAME;
+mv $TEMP/$NAME $RIPLET_ANNEX_HOME/$NAME/$TARGET;
 fi;
 INLINE
 

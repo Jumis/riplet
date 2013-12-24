@@ -1,5 +1,5 @@
 ### foldersio nginx dependencies
-apt-get install nginx libpq5 libpcre3 -y;
+apt-get install nginx libpq5 libpcre3 daemontools -y;
 /etc/init.d/nginx stop;
 mv /etc/nginx /etc/nginx-old;
 
@@ -17,8 +17,10 @@ chmod +x /usr/sbin/nginx;
 ### mehr.
 mkdir /var/lib/nginx/tmp
 chown www-data /var/lib/nginx/tmp
+useradd --no-create-home nginx
 
 ## init
 mkdir -p /etc/service/nginx;
 cp /riplet/service/nginx/run /etc/service/nginx/run;
-chmod +x /etc/service/nginx/bin/run;
+chmod +x /etc/service/nginx/run;
+
