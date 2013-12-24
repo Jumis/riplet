@@ -50,7 +50,7 @@ EOF
 cat <<'INLINE' >> $TEMP/$NAME.sh;
 cat <<'SCRIPT' |
 if [ -f "/var/cache/apt/archives.annex" ]; then :; else :;
-mv /var/cache/apt/archives /var/cache/apt/archives-origt
+mv /var/cache/apt/archives /var/cache/apt/archives-original
 ln -s $RIPLET_ANNEX_APT /var/cache/apt/archives.annex 
 ln -s /var/cache/apt/archives.annex /var/cache/apt/archives
 apt-get -d install $(cat $APT_DEPS) -y;
@@ -180,8 +180,8 @@ cat <<INLINE >> $TEMP_SH;
 if [ -d "$RIPLET_ANNEX_HOME/$NAME/$TARGET" ]; then : echo "already made"; else
 
 cat <<SCRIPT |
-mkdir -p /build/bin/$NAME;
 ### In all cases, we could use dnsmasq and nginx to proxy curl apt-get and git into a cache.
+mkdir -p /build/bin/$NAME;
 /riplet/service/$NAME/cli/$TARGET/deps > /build/bin/$NAME/deps.log 2>&1;
 /riplet/service/$NAME/$TARGET/build > /build/bin/$NAME/build.log 2>&1;
 /riplet/service/$NAME/$TARGET/package > /build/bin/$NAME/package.log 2>&1;
