@@ -1,0 +1,7 @@
+function curl_annex() {
+CURLOPT_ARGS=$(echo $@)
+CURLOPT_URL=$(curl $CURLOPT_ARGS --libcurl - -s --proxy 0:0 | fgrep CURLOPT_URL | cut -f 2 -d '"')
+CURLOPT_ANNEX_URI="file:/root/annex/uri/$CURLOPT_URL";
+curl ${CURLOPT_ARGS/$CURLOPT_URL/$CURLOPT_ANNEX_URI}
+}
+curl_annex $@

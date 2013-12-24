@@ -1,0 +1,107 @@
+#!/bin/bash
+### In all cases, we could use dnsmasq to redirect requests to a proxy.
+
+### Link apt cache directory. We could just use docker volume.
+if [ -d "/riplet/annex/ubuntu" ]; then :;
+if [ -d "/var/cache/apt/archives" ]; then :;
+mv -f /var/cache/apt/archives /var/cache/apt/archives-original;
+fi;
+ln -s /riplet/annex/ubuntu /var/cache/apt/archives;
+fi;
+
+### Wrap git. Bare git clone uses tar, else git is installed and uses the uri annex.
+if [ -d "/riplet/annex/github" ]; then :;
+if [ -f "/usr/bin/git-original" ]; then :; else :;
+
+cat << 'PROXY' > /usr/bin/git-annex;
+#!/bin/bash
+function git_annex() {
+RIPLET_ANNEX_URI=${RIPLET_ANNEX_URI-"/riplet/annex/uri"};
+RIPLET_ANNEX_GITHUB=${RIPLET_ANNEX_GITHUB-"/riplet/annex/github"};
+GITOPT_BASEURL="https://github.com";
+
+## use tar for git clone
+if [ "$#" = "2" -a "$1" = "clone" ]; then :;
+GITOPT_URL=${2/$GITOPT_BASEURL/""};
+GITOPT_ANNEX_URI="$RIPLET_ANNEX_GITHUB/$GITOPT_URL";
+GITOPT_BASENAME=$(basename "$GITOPT_ANNEX_URI" | rev | cut -f 2- -d '.' | rev);
+mkdir "$GITOPT_BASENAME";
+tar -xf "$GITOPT_ANNEX_URI.tgz" -C "$GITOPT_BASENAME";
+
+else :;
+
+## install git.
+if [ -f "/usr/bin/git-original" ]; then :; else :;
+rm -f /usr/bin/git;
+apt-get install git -y;
+mv /usr/bin/git /usr/bin/git-original;
+ln -s /usr/bin/git-annex /usr/bin/git;
+fi;
+
+## map to git annex.
+GIT_BIN=/usr/bin/git-original;
+GITOPT_ARGS=$@;
+GITOPT_ANNEX_URI="file:$RIPLET_ANNEX_URI/$GITOPT_URL";
+$GIT_BIN ${GITOPT_ARGS/$GITOPT_URL/$GITOPT_ANNEX_URI};
+fi;
+}
+git_annex $@
+PROXY
+chmod +x /usr/bin/git-annex;
+
+## add link.
+if [ -h "/usr/bin/git" ]; then :; else :;
+if [ -f "/usr/bin/git" ]; then :; mv /usr/bin/git /usr/bin/git-original; fi;
+ln -s /usr/bin/git-annex /usr/bin/git
+fi;
+
+fi; 
+fi;
+
+
+### Wrap curl. Bare curl -O uses cp.
+if [ -d "/riplet/annex/uri" ]; then :;
+if [ -f "/usr/bin/curl-original" ]; then :; else :;
+
+cat << 'PROXY' > /usr/bin/curl-annex;
+#!/bin/bash
+function curl_annex() {
+RIPLET_ANNEX_URI=${RIPLET_ANNEX_URI-"/riplet/annex/uri"};
+CURL_BIN=/usr/bin/curl-original;
+
+### use cp for curl -O
+if [ "$#" = "2" -a "$1" = "-O" ]; then :;
+CURLOPT_URL="$2";
+CURLOPT_ANNEX_URI="$RIPLET_ANNEX_URI/$CURLOPT_URL";
+cp $CURLOPT_ANNEX_URI .;
+
+else :;
+
+## install curl
+if [ -f "$CURL_BIN" ]; then :; else :;
+rm /usr/bin/curl;
+apt-get install curl -y
+mv /usr/bin/curl $CURL_BIN;
+ln -s /usr/bin/curl-annex /usr/bin/curl
+fi;
+
+CURLOPT_ARGS=$@;
+CURLOPT_URL=$($CURL_BIN $CURLOPT_ARGS --libcurl - -s --proxy 0:0 | fgrep CURLOPT_URL | cut -f 2 -d '"');
+CURLOPT_ANNEX_URI="file:$RIPLET_ANNEX_URI/$CURLOPT_URL";
+$CURL_BIN ${CURLOPT_ARGS/$CURLOPT_URL/$CURLOPT_ANNEX_URI};
+fi;
+};
+curl_annex $@;
+PROXY
+chmod +x /usr/bin/curl-annex;
+
+## add link.
+if [ -h "/usr/bin/curl" ]; then :; else :;
+if [ -f "/usr/bin/curl" ]; then :; mv /usr/bin/curl /usr/bin/curl-original; fi;
+ln -s /usr/bin/curl-annex /usr/bin/curl
+fi;
+
+
+fi;
+fi;
+

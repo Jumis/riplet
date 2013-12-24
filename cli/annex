@@ -23,28 +23,179 @@ echo "example: annex branch ubuntu /root";
 else
 
 if [ "1" = "1" ]; then
+### Dependencies
+
+ACTION="build";
+ACTION="make";
+TEMP=$(mktemp -d);
+TEMP_PID="$TEMP/$NAME.docker";
+TEMP_SH="$TEMP/$NAME.sh";
+
+RIPLET_HOME="/riplet";
+RIPLET_ANNEX_APT="/riplet/annex/$TARGET";
+APT_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.apt";
+
+mkdir -p "$BASEDIR/annex/$TARGET/partial";
+
+read -r -d '' RIPLET_DOCKER_CMD <<EOF
+docker run
+ -cidfile $TEMP_PID
+ -v $BASEDIR:$RIPLET_HOME:rw
+ -e RIPLET_HOME=$RIPLET_HOME
+ -e RIPLET_ANNEX_APT=$RIPLET_ANNEX_APT
+ -e APT_DEPS="$APT_DEPS"
+-i foldersio-dev /bin/bash -
+EOF
+
+cat <<'INLINE' >> $TEMP/$NAME.sh;
+cat <<'SCRIPT' |
+if [ -f "/var/cache/apt/archives.annex" ]; then :; else :;
+mv /var/cache/apt/archives /var/cache/apt/archives-origt
+ln -s $RIPLET_ANNEX_APT /var/cache/apt/archives.annex 
+ln -s /var/cache/apt/archives.annex /var/cache/apt/archives
+apt-get -d install $(cat $APT_DEPS) -y;
+fi
+SCRIPT
+INLINE
+
+echo $RIPLET_DOCKER_CMD >> $TEMP_SH;
+echo $TEMP_SH;
+
+fi;
+
+if [ "1" = "1" ]; then
+
+#### Expects that apt ran for git binary.
+
+ACTION="build";
+TEMP=$(mktemp -d);
+TEMP_PID="$TEMP/$NAME.docker";
+TEMP_SH="$TEMP/$NAME.sh";
+
+RIPLET_HOME="/riplet";
+RIPLET_ANNEX_GITHUB="/riplet/annex/github";
+GITHUB_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.github";
+RIPLET_ANNEX_URI="/riplet/annex/uri";
+URI_DEPS="/riplet/service/$NAME/$TARGET/$ACTION.uri";
+
+read -r -d '' RIPLET_DOCKER_CMD <<EOF
+docker run
+ -cidfile $TEMP_PID
+ -v $BASEDIR:$RIPLET_HOME:rw
+ -e RIPLET_HOME=$RIPLET_HOME
+ -e RIPLET_ANNEX_GITHUB=$RIPLET_ANNEX_GITHUB
+ -e RIPLET_ANNEX_APT=$RIPLET_ANNEX_APT
+ -e RIPLET_ANNEX_URI=$RIPLET_ANNEX_URI
+ -e GITHUB_DEPS=$GITHUB_DEPS
+ -e URI_DEPS=$URI_DEPS
+-i foldersio-dev /bin/bash -
+EOF
+
+cat <<'INLINE' >> $TEMP_SH;
+cat <<'SCRIPT' |
+TEMP=$(mktemp -d);
+function riplet_annex_apt {
+if [ -f "/var/cache/apt/archives.annex" ]; then :; else :;
+mv /var/cache/apt/archives /var/cache/apt/archives-origt
+ln -s $RIPLET_ANNEX_APT /var/cache/apt/archives.annex 
+ln -s /var/cache/apt/archives.annex /var/cache/apt/archives
+fi;
+}
+
+for repo in $(cat $GITHUB_DEPS); do :;
+if [ -f "$RIPLET_ANNEX_GITHUB/$repo" ]; then :; else :;
+uri="https://github.com/$repo";
+annex_uri="$RIPLET_ANNEX_URI/$uri";
+if [ -f "$annex_uri" ]; then :; uri="$annex_uri"; fi;
+
+command -v git >/dev/null 2>&1 || { riplet_annex_apt; apt-get install git -y; }
+git clone --separate-git-dir=$TEMP.git --depth 1 $uri $TEMP;
+git --git-dir=$TEMP.git bundle create $TEMP.bundle --all;
+tar -zcf $TEMP.tgz -C $TEMP .;
+
+mkdir -p "$RIPLET_ANNEX_GITHUB/$repo";
+rmdir "$RIPLET_ANNEX_GITHUB/$repo";
+mv $TEMP.tgz "$RIPLET_ANNEX_GITHUB/$repo.tgz";
+mv $TEMP.bundle "$RIPLET_ANNEX_GITHUB/$repo";
+rm -rf $TEMP $TEMP.git $TEMP.bundle $TEMP.tgz;
+
+if [ -f "$annex_uri" ]; then :; else :;
+mkdir -p "$annex_uri";
+rmdir "$annex_uri";
+cp "$RIPLET_ANNEX_GITHUB/$repo" "$annex_uri";
+fi;
+
+fi;
+done;
+echo "git done";
+
+for uri in $(cat $URI_DEPS); do :;
+if [ -f "$RIPLET_ANNEX_URI/$uri" ]; then :; else :;
+command -v curl >/dev/null 2>&1 || { riplet_annex_apt; apt-get install curl -y; }
+rm -rf $TEMP;
+curl -s -S -L "$uri" -o $TEMP;
+mkdir -p "$RIPLET_ANNEX_URI/$uri";
+rmdir "$RIPLET_ANNEX_URI/$uri";
+mv $TEMP "$RIPLET_ANNEX_URI/$uri";
+fi;
+done;
+echo "curl done";
+SCRIPT
+INLINE
+
+echo $RIPLET_DOCKER_CMD >> $TEMP_SH;
+echo $TEMP_SH;
+
+fi;
+
+
+
+
+if [ "1" = "1" ]; then
 ### Base.
 
 TEMP=`mktemp -d`;
+TEMP_PID="$TEMP/$NAME.docker";
+TEMP_SH="$TEMP/$NAME.sh";
 
-BUILD_SCRIPT=$(cat <<EOF
+RIPLET_INSTANCE="/data/instance";
+RIPLET_ANNEX_HOME="/root/annex";
+
+read -r -d '' RIPLET_DOCKER_CMD <<EOF
+docker run
+ -n=false -dns 0.0.0.0
+ -cidfile $TEMP_PID
+ -e RIPLET_HOME=$RIPLET_HOME
+ -v $BASEDIR:$RIPLET_HOME:ro
+ -e RIPLET_ANNEX_GITHUB=$RIPLET_ANNEX_GITHUB
+ -e RIPLET_ANNEX_APT=$RIPLET_ANNEX_APT
+ -e RIPLET_ANNEX_URI=$RIPLET_ANNEX_URI
+ -e RIPLET_ANNEX_NGINX=$RIPLET_ANNEX_URI
+ -v $TEMP:$RIPLET_INSTANCE:rw
+ -e RIPLET_INSTANCE=$RIPLET_INSTANCE
+-i foldersio-dev /bin/bash -
+EOF
+
+cat <<INLINE >> $TEMP_SH;
+if [ -d "$RIPLET_ANNEX_HOME/$NAME/$TARGET" ]; then : echo "already made"; else
+
+cat <<SCRIPT |
 mkdir -p /build/bin/$NAME;
+### In all cases, we could use dnsmasq and nginx to proxy curl apt-get and git into a cache.
+/riplet/service/$NAME/cli/$TARGET/deps > /build/bin/$NAME/deps.log 2>&1;
 /riplet/service/$NAME/$TARGET/build > /build/bin/$NAME/build.log 2>&1;
 /riplet/service/$NAME/$TARGET/package > /build/bin/$NAME/package.log 2>&1;
-EOF
-);
+mv /build/bin/$NAME $RIPLET_INSTANCE
+SCRIPT
+$(echo $RIPLET_DOCKER_CMD);
 
-ANNEX_SCRIPT=$(cat <<EOF
-docker run -cidfile $TEMP/$NAME.docker -v $BASEDIR:/riplet:ro -e RIPLET_HOME=/riplet foldersio-dev /bin/bash -c "$BUILD_SCRIPT";
-docker cp \$(cat $TEMP/$NAME.docker):/build/bin/$NAME $TEMP;
-docker rm \$(cat $TEMP/$NAME.docker) > /dev/null 2>&1;
 git bundle create $TEMP/$NAME.git --branches > /dev/null 2>&1;
-EOF
-);
+mkdir -p  $RIPLET_ANNEX_HOME/$NAME;
+mv $TEMP/$NAME $RIPLET_ANNEX_HOME/$NAME/$TARGET;
+fi;
+INLINE
 
-echo "$ANNEX_SCRIPT" > $TEMP/$NAME.sh;
-
-echo $TEMP/$NAME.sh;
+echo $TEMP_SH;
 
 fi;
 
