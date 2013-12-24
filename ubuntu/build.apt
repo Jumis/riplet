@@ -1,1 +1,1 @@
-curl
+postgresql-9.1 postgresql-9.1-pgmemcache postgresql-contrib-9.1

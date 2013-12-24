@@ -1,1 +1,1 @@
-openjdk-7-jre-headless tomcat7 libtcnative-1 daemontools
+postgresql-9.1 postgresql-9.1-pgmemcache postgresql-contrib-9.1
