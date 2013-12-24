@@ -180,8 +180,8 @@ cat <<INLINE >> $TEMP_SH;
 if [ -d "$RIPLET_ANNEX_HOME/$NAME/$TARGET" ]; then : echo "already made"; else
 
 cat <<SCRIPT |
-mkdir -p /build/bin/$NAME;
 ### In all cases, we could use dnsmasq and nginx to proxy curl apt-get and git into a cache.
+mkdir -p /build/bin/$NAME;
 /riplet/service/$NAME/cli/$TARGET/deps > /build/bin/$NAME/deps.log 2>&1;
 /riplet/service/$NAME/$TARGET/build > /build/bin/$NAME/build.log 2>&1;
 /riplet/service/$NAME/$TARGET/package > /build/bin/$NAME/package.log 2>&1;
