@@ -1,0 +1,7 @@
+function git_annex() {
+GITOPT_ARGS=$(echo $@)
+GITOPT_URL="https://github.com";
+GITOPT_ANNEX_URI="file:/root/annex/uri/$GITOPT_URL";
+git ${GITOPT_ARGS/$GITOPT_URL/$GITOPT_ANNEX_URI}
+}
+git_annex $@

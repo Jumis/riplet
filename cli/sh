@@ -2,12 +2,16 @@
 BASEDIR=${2-"/root"};
 
 if [ -n "$1" ]; then
-ENTRY="service/$1/build";
+# ENTRY="service/$1/build";
+ENTRY="service/$1/make";
+DEPS="/riplet/service/$1/cli/ubuntu/deps";
 
 if [ -f "$BASEDIR/$ENTRY" ]; then
+cat <<E
 docker run -v $BASEDIR:/riplet:ro -e RIPLET_HOME=/riplet -n=false -dns 0.0.0.0 \
 	-t -i foldersio-dev \
-	/bin/bash -c "/riplet/$ENTRY && exec /bin/bash"
+	/bin/bash -c "$DEPS && /riplet/$ENTRY && exec /bin/bash"
+E
 else
 echo "riplet error: Service file not found: $BASEDIR/$ENTRY";
 fi;

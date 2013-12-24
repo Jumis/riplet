@@ -1,13 +1,34 @@
 #!/bin/bash
+NAME="$1";
 BASEDIR=${2-"/root"};
+RIPLET_HOME="/riplet";
+RIPLET_INSTANCE="/data/instance";
 
 if [ -n "$1" ]; then
 ENTRY="service/$1/init";
 
 if [ -f "$BASEDIR/$ENTRY" ]; then
-docker run -v $BASEDIR:/riplet:ro -e RIPLET_HOME=/riplet -n=false -dns 0.0.0.0 \
-	-d foldersio-dev \
-	/riplet/$ENTRY
+TEMP=$(mktemp -d);
+TEMP_PID="$TEMP/$NAME.docker";
+TEMP_RAND=$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32);
+
+touch $TEMP/$NAME.random; chmod 600 $TEMP/$NAME.random;
+echo -n "$TEMP_RAND" > $TEMP/$NAME.random;
+
+read -r -d '' RIPLET_DOCKER_CMD <<EOF
+docker run
+ -n=false -dns 0.0.0.0
+ -cidfile $TEMP_PID
+ -v $TEMP:$RIPLET_INSTANCE:rw
+ -v $BASEDIR:$RIPLET_HOME:ro
+ -e RIPLET_HOME=$RIPLET_HOME
+ -e RIPLET_INSTANCE=$RIPLET_INSTANCE
+-d foldersio-dev $RIPLET_HOME/$ENTRY
+EOF
+
+echo $RIPLET_DOCKER_CMD;
+## echo $($RIPLET_DOCKER_CMD)
+
 else
 echo "riplet error: Service file not found: $BASEDIR/$ENTRY";
 fi;
