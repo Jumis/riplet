@@ -1,11 +1,10 @@
-folders.io riplet
+folders.io riplet: postgres
 =================
 
+## postgres, simple.
+
 Base services:
-* nginx with unbuffered client uploads.
-* postgresql standard
-* tomcat with postgresql jdbc unix sockets
-* memcached until elasticsearch transport works better
+* postgresql
 
 Supporting:
 * ubuntu quantal (apt)
@@ -15,5 +14,5 @@ Using:
 * git-annex
 * docker
 * s3
-
+* folders.io jar dependencies.
 

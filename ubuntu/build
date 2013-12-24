@@ -1,0 +1,10 @@
+### custom builds for tomcat dependencies
+
+apt-get install curl -y
+echo "ok" | /riplet/service/postgres/ubuntu/apt.postgresql.org.sh;
+apt-get install postgres93 -y
+
+mkdir -p /build/ubuntu/postgres;
+cd /build/ubuntu/postgres;
+
+

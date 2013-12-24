@@ -1,0 +1,9 @@
+### foldersio postgres dependencies
+echo "ok" | /riplet/service/postgres/ubuntu/apt.postgresql.org.sh;
+apt-get install postgresql-9.3 -y
+# /etc/init.d/tomcat7 stop;
+
+## init
+mkdir -p /etc/service/postgres;
+cp /riplet/service/postgres/run /etc/service/postgres/run;
+chmod +x /etc/service/postgres/bin/run;
