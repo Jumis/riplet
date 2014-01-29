@@ -7,4 +7,5 @@ before_script:
   - sudo ln -s "$(readlink -f .)" /riplet/service/postgres
   - chmod +x /riplet/service/postgres/build
   - sudo /riplet/service/postgres/build
+  - sudo /riplet/service/postgres/run
 script: /riplet/service/postgres/test
