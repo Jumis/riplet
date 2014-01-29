@@ -9,5 +9,6 @@ before_script:
   - chmod +x /riplet/service/postgres/build  /riplet/service/postgres/run  /riplet/service/postgres/test
   - sudo /riplet/service/postgres/build
   - sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres start
+  - sudo -u postgres psql  -Stx -U postgres -c 'select version();'
 script:
-  - echo "Testing"; sudo -u postgres psql -c 'select version();'; echo "Tested"; sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres stop
+  - echo "Tested"; sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres stop; echo "fin";
