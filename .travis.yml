@@ -5,7 +5,7 @@ cache: apt
 before_script:
   - sudo mkdir -p /riplet/service
   - sudo ln -s "$(readlink -f .)" /riplet/service/postgres
-  - chmod +x /riplet/service/postgres/build
+  - chmod +x /riplet/service/postgres/build  /riplet/service/postgres/run  /riplet/service/postgres/test
   - sudo /riplet/service/postgres/build
   - sudo /riplet/service/postgres/run
 script: /riplet/service/postgres/test
