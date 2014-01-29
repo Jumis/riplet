@@ -1,4 +1,4 @@
-folders.io riplet: postgres
+riplet: postgres
 =================
 
 ## postgres, simple.
@@ -7,12 +7,7 @@ Base services:
 * postgresql
 
 Supporting:
-* ubuntu quantal (apt)
+* ubuntu quantal (apt + deb)
 * centos 6.3 (yum)
 
-Using:
-* git-annex
-* docker
-* s3
-* folders.io jar dependencies.
-
+Looking into generic linux build, tinycore.
