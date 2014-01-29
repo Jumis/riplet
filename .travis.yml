@@ -10,4 +10,4 @@ before_script:
   - sudo /riplet/service/postgres/build
   - sudo setuidgid postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres start
 script:
-  - echo "Testing"; /riplet/service/postgres/test; echo "Tested"; sudo setuidgid postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres stop
+  - echo "Testing"; psql -U postgres -c 'select version();'; echo "Tested"; sudo setuidgid postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres stop
