@@ -1,5 +1,7 @@
 #!/bin/sh
 mkdir -p /data/instance;
 /riplet/service/postgres/make 2>&1 | tee -a /data/instance/boot.log > /dev/null;
+mkdir -p /data/postgres;
+chown postgres /data/postgres;
 hostname;
 
