@@ -4,5 +4,6 @@ compiler:
 cache: apt
 before-script:
   - chmod +x ./ubuntu/build 
-script: ./ubuntu/build
+  - sudo ./ubuntu/build
+script: echo "Ready to test"
   
