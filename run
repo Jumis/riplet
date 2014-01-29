@@ -1,5 +1,7 @@
 #!/bin/sh
 exec 2>&1;
-exec setuidgid postgres /usr/lib/postgresql/9.3/bin/initdb -D /data/postgres
+if test -f /data/postgres/postgresql.conf; then :; else :;
+setuidgid postgres /usr/lib/postgresql/9.3/bin/initdb -D /data/postgres
+fi;
 exec setuidgid postgres /usr/lib/postgresql/9.3/bin/postmaster -D /data/postgres
 
