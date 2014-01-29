@@ -8,5 +8,7 @@ before_script:
   - sudo ln -s "$(readlink -f .)" /riplet/service/postgres
   - chmod +x /riplet/service/postgres/build  /riplet/service/postgres/run  /riplet/service/postgres/test
   - sudo /riplet/service/postgres/build
-  - sudo /bin/sh -c '/riplet/service/postgres/run &'
-script: /riplet/service/postgres/test
+  - sudo setuidgid postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres start
+script:
+  - /riplet/service/postgres/test
+  - sudo setuidgid postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres stop
