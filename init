@@ -2,5 +2,5 @@
 mkdir -p /data/instance;
 /riplet/service/postgres/cli/ubuntu/deps;
 /riplet/service/postgres/make 2>&1 | tee -a /data/instance/boot.log > /dev/null;
-ifconfig lo up;
+# ifconfig lo up;
 exec svscanboot;
