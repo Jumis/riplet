@@ -3,7 +3,7 @@ compiler:
   - gcc
 cache: apt
 before-script:
-  - chmod +x ./ubuntu/build 
-  - sudo ./ubuntu/build
-script: echo "Ready to test"
-  
+  - sudo mkdir -p /riplet/service
+  - sudo ln -s "$(readlink -f .)" /riplet/service/postgres
+  - chmod +x /riplet/service/postgres/build
+script: sudo /riplet/service/postgres/build
