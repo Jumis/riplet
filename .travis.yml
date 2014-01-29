@@ -1,0 +1,8 @@
+language: cpp
+compiler:
+  - gcc
+cache: apt
+before-script:
+  - chmod +x ./ubuntu/build 
+script: ./ubuntu/build
+  
