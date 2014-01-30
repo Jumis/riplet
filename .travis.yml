@@ -1,0 +1,13 @@
+language: java
+compiler:
+  - mvn
+cache: apt
+before_script:
+  - sudo apt-get -y install daemontools
+  - sudo mkdir -p /riplet/service
+  - sudo ln -s "$(readlink -f .)" /riplet/service/tomcat
+  - chmod +x /riplet/service/tomcat/build  /riplet/service/tomcat/init
+  - sudo /riplet/service/tomcat/build
+  - sudo /riplet/service/tomcat/run
+script:
+  - /riplet/service/tomcat/test
