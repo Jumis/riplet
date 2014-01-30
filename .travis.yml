@@ -8,6 +8,6 @@ before_script:
   - sudo ln -s "$(readlink -f .)" /riplet/service/nginx
   - chmod +x /riplet/service/nginx/build  /riplet/service/nginx/init  /riplet/service/nginx/test
   - sudo /riplet/service/nginx/build
-  - sudo -u nginx  /riplet/service/nginx/init
+  - sudo /riplet/service/nginx/init
 script:
   - curl -I 0
