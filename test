@@ -1,1 +1,1 @@
-psql -U postgres -c 'select version();'
+psql -Stx -c 'select version();' -U postgres
