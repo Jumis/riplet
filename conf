@@ -1,4 +1,4 @@
-if[ -e "/etc/nginx/nginx.conf" ]; : else cat <<<E > /etc/nginx/nginx.conf
+if[ -e "/etc/nginx/nginx.conf" ]; : else cat <<E > /etc/nginx/nginx.conf
 user  nginx;
 worker_processes  1;
 
@@ -47,3 +47,4 @@ http {
     }
 }
 E
+fi;
