@@ -6,8 +6,9 @@ before_script:
   - sudo apt-get -y install daemontools
   - sudo mkdir -p /riplet/service
   - sudo ln -s "$(readlink -f .)" /riplet/service/nginx
-  - chmod +x /riplet/service/nginx/build  /riplet/service/nginx/init  /riplet/service/nginx/test
+  - chmod +x /riplet/service/nginx/build  /riplet/service/nginx/init  /riplet/service/nginx/test   /riplet/service/nginx/conf
   - sudo /riplet/service/nginx/build
+  - sudo /riplet/service/nginx/conf
   - sudo /riplet/service/nginx/run
 script:
   - /riplet/service/nginx/test
