@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -e "/etc/nginx/mime.types" ]; then:; else cat <<E > /etc/nginx/mime.types
+if [ -e "/etc/nginx/mime.types" ]; then :; else cat <<E > /etc/nginx/mime.types
 types {
   text/html                             html htm shtml;
   text/css                              css;
