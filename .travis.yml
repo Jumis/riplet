@@ -9,8 +9,8 @@ before_script:
   - chmod +x /riplet/service/nginx/build  /riplet/service/nginx/init  /riplet/service/nginx/test   /riplet/service/nginx/conf
   - sudo /riplet/service/nginx/build
   - sudo /riplet/service/nginx/conf
-  - sudo -u nginx /usr/sbin/nginx -s reload
+  - sudo /usr/sbin/nginx -s reload
 script:
-  - sudo -u nginx /riplet/service/nginx/test
+  - /riplet/service/nginx/test
 after_script:
-  - sudo -u nginx /usr/sbin/nginx -s stop
+  - sudo /usr/sbin/nginx -s stop
