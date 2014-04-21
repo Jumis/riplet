@@ -37,11 +37,18 @@ elif [ "$CMD" = "image" ]; then
 $DIR/image "$@"
 
 else
-echo "riplet: $NAME /";
-echo "sh docker image";
-echo "sh: build the package and open a shell.";
-echo "docker: build the package and run an instance.";
-echo "image: build the package and return a container id.";
+cat <<E
+riplet: $NAME
+  sh docker image
+  sh: build the package and open a shell
+  docker: build the package and run an instance.
+  image: build the package and return a container id.
+
+helper: help
+  git: replace clone uris fetched via git with annex uris.
+  curl: replace http(s) urls fetched via curl with annex uris.
+  branch: show the name of the current riplet branch.
+E
 fi;
 
 fi;
