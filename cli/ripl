@@ -43,8 +43,8 @@ riplet: $NAME
   sh: build the package and open a shell
   docker: build the package and run an instance.
   image: build the package and return a container id.
-
-helper: help
+  annex: create three shell scripts for deps and two build steps.
+api: snippets
   git: replace clone uris fetched via git with annex uris.
   curl: replace http(s) urls fetched via curl with annex uris.
   branch: show the name of the current riplet branch.
