@@ -1,4 +1,3 @@
-apt-get update -q
 apt-get install -qy busybox-static
 mkdir /rootfs
 cd /rootfs
