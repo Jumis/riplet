@@ -3,15 +3,16 @@ compiler:
   - gcc
 cache: apt
 before_script:
-  - curl -O "http://ftp.postgresql.org/pub/source/v9.3.4/postgresql-9.3.4.tar.bz2"
-  - tar -jxf "postgresql-9.3.4.tar.bz2"
-  - cd "postgresql-9.3.4"
-  - ./configure
-  - ./make
   - sudo apt-get -y install daemontools
   - sudo mkdir -p /riplet/service
   - sudo ln -s "$(readlink -f .)" /riplet/service/postgres
   - chmod +x /riplet/service/postgres/build  /riplet/service/postgres/run  /riplet/service/postgres/test
+  - curl -O "http://ftp.postgresql.org/pub/source/v9.3.4/postgresql-9.3.4.tar.bz2"
+  - tar -jxf "postgresql-9.3.4.tar.bz2"
+  - cd "postgresql-9.3.4"
+  - ./configure --prefix=/riplet/service/postgres
+  - make
+  - ls -lat
   - sudo /riplet/service/postgres/build
   - sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_ctl -D /data/postgres start
 script:
