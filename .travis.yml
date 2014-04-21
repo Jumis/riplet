@@ -4,7 +4,7 @@ compiler:
 cache: apt
 before_script:
   - curl -O "http://ftp.postgresql.org/pub/source/v9.3.4/postgresql-9.3.4.tar.bz2"
-  - tar -zxf "postgresql-9.3.4.tar.bz2"
+  - tar -jxf "postgresql-9.3.4.tar.bz2"
   - cd "postgresql-9.3.4"
   - ./configure
   - ./make
