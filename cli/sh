@@ -17,6 +17,9 @@ echo "riplet error: Service file not found: $BASEDIR/$ENTRY";
 fi;
 
 else
-echo "riplet usage: ripl sh <service> [basedir]";
+cat <<E
+# Make then open a bash terminal of a new container.
+	ripl sh <service> [basedir]
+E
 fi;
 
