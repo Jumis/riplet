@@ -1,0 +1,12 @@
+language: cpp
+compiler:
+  - gcc
+cache: apt
+before_script:
+  - sudo apt-get -y install daemontools
+  - sudo mkdir -p /riplet/service
+  - sudo ln -s "$(readlink -f .)" /riplet/service/busybox
+  - chmod +x /riplet/service/busybox/make
+  - sudo /riplet/service/busybox/make
+script:
+  - ls -lat /
