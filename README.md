@@ -40,7 +40,7 @@ It also results in an entry to the “uri” directory:
 uri/http:/nginx.org/download/nginx-1.4.2.tar.gz
 
 Additionally, it downloads github files:
-
+``` sh
   github/agentzh/memc-nginx-module.git
   github/agentzh/memc-nginx-module.git.tgz
   github/agentzh/echo-nginx-module.git.tgz
@@ -51,3 +51,4 @@ Additionally, it downloads github files:
   github/perusio/nginx-auth-request-module.git.tgz
   github/wandenberg/nginx-push-stream-module.git.tgz
   github/wandenberg/nginx-push-stream-module.git
+```
