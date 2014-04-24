@@ -1,0 +1,2 @@
+export PGDATA=/tmp/test_pg
+pg_ctl init
