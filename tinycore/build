@@ -1,0 +1,1 @@
+tce-load -wi postgresql > /dev/null 2>&1
