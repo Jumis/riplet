@@ -9,7 +9,10 @@ cd /tmp/build
 curl -O http://www.dest-unreach.org/socat/download/socat-1.7.3.0.tar.gz
 tar -zxf socat-1.7.3.0.tar.gz
 cd socat-1.7.3.0
-./configure
+## openssl 1.0.0 seems to use __fdelt_chk of glibc 2.15
+./configure --disable-openssl
 make
 
 cp socat $CWD
+cd $CWD
+cd ..
