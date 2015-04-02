@@ -6,9 +6,9 @@ CWD=$(pwd)
 
 mkdir -p /tmp/build
 cd /tmp/build
-curl -O http://www.dest-unreach.org/socat/download/socat-2.0.0-b7.tar.gz
-tar -zxf socat-2.0.0-b7.tar.gz
-cd socat-2.0.0-b7
+curl -O http://www.dest-unreach.org/socat/download/socat-1.7.3.0.tar.gz
+tar -zxf socat-1.7.3.0.tar.gz
+cd socat-1.7.3.0
 ./configure
 make
 
