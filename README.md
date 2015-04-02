@@ -1,6 +1,5 @@
-# busybox
-  
+# socat
 
-## Simple busybox build from ubuntu
+## Somewhat static socat from ubuntu
 
-Based on docker builds for busybox and the maor libs fork. This busybox image should work with docker and run Java.
+An easy standalone copy of the socat network utility.
