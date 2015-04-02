@@ -11,4 +11,4 @@ addons:
 before_script:
   - chmod +x make
 script:
-  - make
+  - ./make
