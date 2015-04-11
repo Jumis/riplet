@@ -19,6 +19,12 @@ cd /tmp/build
 curl -O http://www.dest-unreach.org/socat/download/socat-1.7.3.0.tar.gz
 tar -zxf socat-1.7.3.0.tar.gz
 cd socat-1.7.3.0
+cat <<PATCH >> xio-socket.h
+#ifndef NETDB_INTERNAL
+#define NETDB_INTERNAL -1
+#endif
+PATCH
+
 ## glibc 2.15+ or ... trying musl.
 CC="$CC" ./configure
 make
