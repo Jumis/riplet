@@ -1,4 +1,13 @@
-which curl || apt-get install -qy curl musl
+which curl || apt-get install -qy curl
+# manual musl build
+curl -O http://www.musl-libc.org/releases/musl-1.1.8.tar.gz
+tar -zxf musl-1.1.8.tar.gz
+cd musl-1.1.8
+./configure
+make
+
+CC="$PWD/tools/musl-gcc"
+cd ..
 
 mkdir -p socat
 cd socat
