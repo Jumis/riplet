@@ -3,10 +3,10 @@ which curl || apt-get install -qy curl
 curl -O http://www.musl-libc.org/releases/musl-1.1.8.tar.gz
 tar -zxf musl-1.1.8.tar.gz
 cd musl-1.1.8
-./configure
+./configure --disable-shared
 make
 
-CC="$PWD/tools/musl-gcc"
+CC="$PWD/tools/musl-gcc -static"
 cd ..
 
 mkdir -p socat
@@ -20,7 +20,7 @@ tar -zxf socat-1.7.3.0.tar.gz
 cd socat-1.7.3.0
 ## glibc 2.15+ or...
 ## CC="musl-gcc" 
-./configure --disable-shared
+./configure
 make
 
 
