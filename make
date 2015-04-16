@@ -31,4 +31,5 @@ make
 
 cp socat $CWD
 cd $CWD
+xz socat
 cd ..

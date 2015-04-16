@@ -5,10 +5,10 @@ addons:
   apt:
     packages:
     - curl
-    - musl
+    - xz
   artifacts:
     paths:
-    - socat
+    - socat.xz
 before_script:
   - chmod +x make
 script:
